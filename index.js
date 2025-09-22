@@ -3,6 +3,7 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");  // ✅ add this
 const middlewares = require("./src/middlewares/middlewares.js");
 const loginRoute = require("./src/Controllers/loginAPI.js");
+const machineWiseDataRoute = require("./src/Controllers/machineWiseData.js");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(limiter);   // ✅ now works
 app.use(express.json());
 
 app.use("/api/login", loginRoute);
+app.use("/api", machineWiseDataRoute);
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
