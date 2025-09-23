@@ -4,7 +4,7 @@ const rateLimit = require("express-rate-limit");  // ✅ add this
 const middlewares = require("./src/middlewares/middlewares.js");
 const loginRoute = require("./src/Controllers/loginAPI.js");
 const machineWiseDataRoute = require("./src/Controllers/machineWiseData.js");
-
+const HomeRoute=require("./src/Controllers/HomePage/Home.js")
 const app = express();
 
 // ✅ Rate limiter (100 requests per 15 minutes per IP)
@@ -27,7 +27,7 @@ app.use(express.json());
 
 app.use("/api/login", loginRoute);
 app.use("/api", machineWiseDataRoute);
-
+app.use("/api/Home",HomeRoute );
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log("Server Listening on PORT:", PORT);
