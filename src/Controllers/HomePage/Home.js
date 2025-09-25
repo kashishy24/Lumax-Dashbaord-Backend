@@ -6,7 +6,7 @@ const sql = require("mssql");
 
 const router = express.Router();
 
-// 📌 Plant OEE API
+//  Plant OEE API
 router.get("/plantOEE", async (req, res) => {
   try {
     const { mode, startDate, endDate } = req.query;
