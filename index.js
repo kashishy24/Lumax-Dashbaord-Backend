@@ -3,18 +3,18 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");  //  add this
 const middlewares = require("./src/middlewares/middlewares.js");
 const loginRoute = require("./src/Controllers/loginAPI.js");
-const machineWiseDataRoute = require("./src/Controllers/machineWiseData.js");
+const machineWiseDataRoute = require("./src/Controllers/Performance/machineWiseData.js");
 const HomeRoute=require("./src/Controllers/HomePage/Home.js")
-const plantTimesRoute=require("./src/Controllers/HomePage/plantTimes.js")
+const PerformanceHomeRoute = require("./src/Controllers/Performance/PerfHome.js");
 const app = express();
 
 // Rate limiter (100 requests per 15 minutes per IP)
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 100,
+//   standardHeaders: true,
+//   legacyHeaders: false,
+// });
 
 app.use(cors({
   origin: true,
@@ -23,13 +23,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-app.use(limiter);   
+//app.use(limiter);   
+
+// app.use("/api", limiter);
 app.use(express.json());
 
 app.use("/api/login", loginRoute);
-app.use("/api", machineWiseDataRoute);
+app.use("/api/PerfMachine", machineWiseDataRoute);
 app.use("/api/Home",HomeRoute );
-app.use("/api/plantTime",plantTimesRoute );
+app.use("/api/PerformanceHome",PerformanceHomeRoute );
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {
   console.log("Server Listening on PORT:", PORT);
