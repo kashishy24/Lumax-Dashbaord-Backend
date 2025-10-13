@@ -82,7 +82,7 @@ router.get("/machinewise", async (req, res) => {
       .input("StartDate", sql.Date, startDate || null)
       .input("EndDate", sql.Date, endDate || null)
       .input("StationID", sql.Int, stationId || null)
-      .execute("sp_GetMachineWiseDataDashboard");
+      .execute("sp_GetMachineWiseDataDashboardKpiCard");;
 
     res.json({
       success: true,
