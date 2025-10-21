@@ -139,6 +139,36 @@ router.get("/GetMachineNoProductionTime", async (req, res) => {
   }
 });
 
+// ✅ Get the Machine No production Time according to filters (Mode + EquipmentID)
+router.get("/GetTop5MachineDowntime", async (req, res) => {
+  try {
+    // Accept case-insensitive query parameters
+    const mode = req.query.mode || req.query.Mode || "SHIFT";
+    const startDate = req.query.startDate || req.query.StartDate || null;
+    const endDate = req.query.endDate || req.query.EndDate || null;
+    const equipmentID = req.query.equipmentID || req.query.EquipmentID || null;
 
+    // Convert dates safely
+    const startDateVal = startDate ? new Date(startDate) : null;
+    const endDateVal = endDate ? new Date(endDate) : null;
+
+    // Connect to SQL Server
+    const pool = await sql.connect();
+
+    // Execute stored procedure
+    const result = await pool.request()
+      .input("Mode", sql.VarChar(20), mode)
+      .input("StartDate", sql.Date, startDateVal)
+      .input("EndDate", sql.Date, endDateVal)
+      .input("EquipmentID", sql.NVarChar(50), equipmentID)
+      .execute("sp_Dashboard_Machine_Get_Top5_Downtime_Duration_Occurence");
+
+    // Return response
+    res.json({ success: true, data: result.recordset });
+  } catch (error) {
+    console.error("❌ Error fetching Downtime:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 module.exports = router;
