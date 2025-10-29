@@ -8,6 +8,9 @@ const HomeRoute=require("./src/Controllers/HomePage/Home.js")
 const PerformanceHomeRoute = require("./src/Controllers/Performance/PerfHome.js");
 const DowntimeHomeRoute= require("./src/Controllers/Downtime/DTHome.js");
 const DowntimeMachineRoute= require("./src/Controllers/Downtime/DTMachine.js");
+const ParameterRoute= require("./src/Controllers/Parameter/Parameter.js");
+const AlarmRoute= require("./src/Controllers/Alarm/Alarm.js");
+
 const app = express();
 
 // Rate limiter (100 requests per 15 minutes per IP)
@@ -36,6 +39,8 @@ app.use("/api/Home",HomeRoute );
 app.use("/api/PerformanceHome",PerformanceHomeRoute );
 app.use("/api/DowntimeHome",DowntimeHomeRoute );
 app.use("/api/DowntimeMachine",DowntimeMachineRoute );
+app.use("/api/MachineParameter",ParameterRoute );
+app.use("/api/MachineAlarm",AlarmRoute );
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => {

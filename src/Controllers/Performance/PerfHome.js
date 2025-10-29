@@ -248,126 +248,33 @@ router.get("/GetQualityTrend", async (req, res) => {
   }
 });
 
-//Get Hourly expected and actual trend
-router.get("/GetHourlyExpActualQtyTrend", async (req, res) => {
-  const { Mode, StartDate, EndDate, EquipmentID } = req.query; // ✅ Added EquipmentID
+//Get Machine Names
+router.get("/GetMachineName", async (req, res) => {
+try {
+const sql = require("mssql");
+const pool = await sql.connect();
+// Execute stored procedure
+const result = await pool
+  .request()
+  .execute("Dashbaord_GetDistinctEquipmentNames");
 
-  try {
-    // Basic validation
-    if (!Mode) {
-      return res.status(400).json({ success: false, message: "Mode is required" });
-    }
-
-    // Connect to SQL
-    const pool = await sql.connect();
-
-    // Execute stored procedure
-    const request = pool.request()
-      .input("Mode", sql.VarChar(20), Mode)
-      .input("StartDate", sql.Date, StartDate || null)
-      .input("EndDate", sql.Date, EndDate || null);
-
-    // ✅ Add EquipmentID only if provided (and matches NVARCHAR(50))
-    if (EquipmentID) {
-      request.input("EquipmentID", sql.NVarChar(50), EquipmentID);
-    } else {
-      request.input("EquipmentID", sql.NVarChar(50), null);
-    }
-
-    const result = await request.execute("sp_Get_Machine_Hourly_ExpActual_Trend");
-
-    // Return the data
-    res.json({
-      success: true,
-      data: result.recordset,
-    });
-  } catch (error) {
-    console.error("Error executing SP:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-      error: error.message,
-    });
-  }
+// Return response
+res.status(200).json({
+  success: true,
+  message: "Data fetched successfully.",
+  data: result.recordset,
+});
+} catch (error) {
+console.error("Error in Dashbaord_GetDistinctEquipmentNames:", error);
+res.status(500).json({
+success: false,
+message: "Internal Server Error",
+error: error.message,
+});
+}
 });
 
-
-
-//Get Hourly total and rejected trend
-router.get("/GetHourlyTotalRejectedQtyTrend", async (req, res) => {
-  const { Mode, StartDate, EndDate, EquipmentID } = req.query; // ✅ Added EquipmentID
-
-  try {
-    // Basic validation
-    if (!Mode) {
-      return res.status(400).json({ success: false, message: "Mode is required" });
-    }
-
-    // Connect to SQL
-    const pool = await sql.connect();
-
-    // Execute stored procedure
-    const request = pool.request()
-      .input("Mode", sql.VarChar(20), Mode)
-      .input("StartDate", sql.Date, StartDate || null)
-      .input("EndDate", sql.Date, EndDate || null);
-
-    // ✅ Add EquipmentID only if provided (and matches NVARCHAR(50))
-    if (EquipmentID) {
-      request.input("EquipmentID", sql.NVarChar(50), EquipmentID);
-    } else {
-      request.input("EquipmentID", sql.NVarChar(50), null);
-    }
-
-    const result = await request.execute("sp_Get_Machine_Hourly_TotalRejected_Trend");
-
-    // Return the data
-    res.json({
-      success: true,
-      data: result.recordset,
-    });
-  } catch (error) {
-    console.error("Error executing SP:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-      error: error.message,
-    });
-  }
-});
-// Get the Rework quantity according to reason
-
-router.get("/GetReworkQtyandReasonChart", async (req, res) => {
-  const { Mode, StartDate, EndDate, EquipmentID } = req.query;
-
-  try {
-    if (!Mode) {
-      return res.status(400).json({ success: false, message: "Mode is required" });
-    }
-
-    const pool = await sql.connect();
-
-    const request = pool.request()
-      .input("Mode", sql.VarChar(20), Mode)
-      .input("StartDate", sql.Date, StartDate || null)
-      .input("EndDate", sql.Date, EndDate || null)
-      .input("EquipmentID", sql.NVarChar(50), EquipmentID || null);
-
-    const result = await request.execute("sp_Get_Rework_Reason_Trend");
-
-    res.json({
-      success: true,
-      data: result.recordset,
-    });
-  } catch (error) {
-    console.error("Error executing SP:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-      error: error.message,
-    });
-  }
-});
+//------------------------------------------
 
 
 module.exports = router;

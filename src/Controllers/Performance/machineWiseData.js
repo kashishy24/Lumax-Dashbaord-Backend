@@ -35,7 +35,7 @@ router.get("/machineoee", async (req, res) => {
   }
 });
 
-// GET Machine Times Data
+// GET Machine cycle time heat map
 
 router.get("/machineTimes", async (req, res) => {
   try {
@@ -66,7 +66,7 @@ router.get("/machineTimes", async (req, res) => {
 });
 
 
-//Get the loss Name
+
 
 // GET Loss Names
 router.get("/lossname", async (req, res) => {
@@ -120,75 +120,6 @@ router.get("/Sublossname", async (req, res) => {
   }
 });
 
-// //Get the All Losses and selected loss duration and occurence by hourly (Current Shift)
-// router.get("/hourlylossForShift", async (req, res) => {
-//   try {
-//     const { EquipmentKey, IncludeZeroHours, LossID, CountType } = req.query;
-
-//     const pool = await sql.connect();
-//     const result = await pool
-//       .request()
-//       .input("EquipmentKey", sql.NVarChar(100), EquipmentKey)        // required
-//       .input("IncludeZeroHours", sql.Bit, IncludeZeroHours || 1)     // default = 1
-//       .input("LossID", sql.Int, LossID || null)                      // optional
-//       .input("CountType", sql.VarChar(10), CountType || "overlap")   // default = 'overlap'
-//       .execute("SP_GetHourlyLossAndOccurrences_ForEquipment_CurrentShift_New");
-
-//     res.json({
-//       success: true,
-//       data: result.recordset,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching Hourly Loss Data:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error fetching Hourly Loss data",
-//       error: error.message,
-//     });
-//   }
-// });
-
-
-// //Get the All Losses and selected loss duration and occurence by day,week,month,dynamic date selection
-// router.post("/lossesForDayWeekMonthDates", async (req, res) => {
-//   try {
-//     const {
-//       EquipmentKey,
-//       Mode,
-//       IncludeZeroPeriods,
-//       LossID,
-//       CountType,
-//       RefDate,
-//       StartDate,
-//       EndDate,
-//     } = req.body;
-
-//     const pool = await sql.connect();
-//     const result = await pool
-//       .request()
-//       .input("EquipmentKey", sql.NVarChar(100), EquipmentKey)                 // required
-//       .input("Mode", sql.VarChar(10), Mode || "day")
-//       .input("IncludeZeroPeriods", sql.Bit, IncludeZeroPeriods ?? 1)
-//       .input("LossID", sql.Int, LossID ?? null)
-//       .input("CountType", sql.VarChar(10), CountType || "overlap")
-//       .input("RefDate", sql.Date, RefDate ?? null)
-//       .input("StartDate", sql.Date, StartDate ?? null)
-//       .input("EndDate", sql.Date, EndDate ?? null)
-//       .execute("SP_GetLosses_ByMode_WithOccurrences_Duration");
-
-//     res.json({
-//       success: true,
-//       data: result.recordset,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching Losses Data:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error fetching Losses data",
-//       error: error.message,
-//     });
-//   }
-// });
 
 
 
@@ -369,6 +300,126 @@ router.get("/GetCumulativeTrendDurationOccurrenceByMode", async (req, res) => {
   }
 });
 
+//Get Hourly expected and actual trend
+router.get("/GetHourlyExpActualQtyTrend", async (req, res) => {
+  const { Mode, StartDate, EndDate, EquipmentID } = req.query; // ✅ Added EquipmentID
+
+  try {
+    // Basic validation
+    if (!Mode) {
+      return res.status(400).json({ success: false, message: "Mode is required" });
+    }
+
+    // Connect to SQL
+    const pool = await sql.connect();
+
+    // Execute stored procedure
+    const request = pool.request()
+      .input("Mode", sql.VarChar(20), Mode)
+      .input("StartDate", sql.Date, StartDate || null)
+      .input("EndDate", sql.Date, EndDate || null);
+
+    // ✅ Add EquipmentID only if provided (and matches NVARCHAR(50))
+    if (EquipmentID) {
+      request.input("EquipmentID", sql.NVarChar(50), EquipmentID);
+    } else {
+      request.input("EquipmentID", sql.NVarChar(50), null);
+    }
+
+    const result = await request.execute("sp_Get_Machine_Hourly_ExpActual_Trend");
+
+    // Return the data
+    res.json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error("Error executing SP:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
+
+
+
+//Get Hourly total and rejected trend
+router.get("/GetHourlyTotalRejectedQtyTrend", async (req, res) => {
+  const { Mode, StartDate, EndDate, EquipmentID } = req.query; // ✅ Added EquipmentID
+
+  try {
+    // Basic validation
+    if (!Mode) {
+      return res.status(400).json({ success: false, message: "Mode is required" });
+    }
+
+    // Connect to SQL
+    const pool = await sql.connect();
+
+    // Execute stored procedure
+    const request = pool.request()
+      .input("Mode", sql.VarChar(20), Mode)
+      .input("StartDate", sql.Date, StartDate || null)
+      .input("EndDate", sql.Date, EndDate || null);
+
+    // ✅ Add EquipmentID only if provided (and matches NVARCHAR(50))
+    if (EquipmentID) {
+      request.input("EquipmentID", sql.NVarChar(50), EquipmentID);
+    } else {
+      request.input("EquipmentID", sql.NVarChar(50), null);
+    }
+
+    const result = await request.execute("sp_Get_Machine_Hourly_TotalRejected_Trend");
+
+    // Return the data
+    res.json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error("Error executing SP:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
+// Get the Rework quantity according to reason
+
+router.get("/GetReworkQtyandReasonChart", async (req, res) => {
+  const { Mode, StartDate, EndDate, EquipmentID } = req.query;
+
+  try {
+    if (!Mode) {
+      return res.status(400).json({ success: false, message: "Mode is required" });
+    }
+
+    const pool = await sql.connect();
+
+    const request = pool.request()
+      .input("Mode", sql.VarChar(20), Mode)
+      .input("StartDate", sql.Date, StartDate || null)
+      .input("EndDate", sql.Date, EndDate || null)
+      .input("EquipmentID", sql.NVarChar(50), EquipmentID || null);
+
+    const result = await request.execute("sp_Get_Rework_Reason_Trend");
+
+    res.json({
+      success: true,
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error("Error executing SP:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+});
 
 
 module.exports = router;
