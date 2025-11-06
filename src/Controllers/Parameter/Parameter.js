@@ -7,52 +7,52 @@ const sql = require("mssql");
 
 const router = express.Router();
 
-router.get("/GetMachineParametersByCategory", async (req, res) => {
-try {
-const sql = require("mssql");
-const pool = await sql.connect();
 
+router.get("/GetMachineParameterTrendByTime", async (req, res) => {
+  try {
+    const sql = require("mssql");
+    const pool = await sql.connect();
 
-// Read query parameters (with fallbacks)
-const MachineID = req.query.MachineID || req.query.machineID || "1";
-const CategoryList = req.query.CategoryList || req.query.categoryList || null;
-const ParameterList = req.query.ParameterList || req.query.parameterList || null;
+    const MachineID = req.query.MachineID || req.query.machineID;
+    const ProdDate = req.query.ProdDate || req.query.prodDate;
+    const ShiftName = req.query.ShiftName || req.query.shiftName || null;
+    const StartTime = req.query.StartTime || req.query.startTime || null;
+    const EndTime = req.query.EndTime || req.query.endTime || null;
+    const ParameterList = req.query.ParameterList || req.query.parameterList;
 
-// Validate required field
-if (!MachineID) {
-  return res.status(400).json({
-    success: false,
-    message: "MachineID is required.",
-  });
-}
+    if (!MachineID || !ProdDate || !ParameterList) {
+      return res.status(400).json({
+        success: false,
+        message: "MachineID, ProdDate, and ParameterList are required.",
+      });
+    }
 
-// Execute stored procedure
-const result = await pool
-  .request()
-  .input("MachineID", sql.VarChar, MachineID)
-  .input("CategoryList", sql.NVarChar, CategoryList)
-  .input("ParameterList", sql.NVarChar, ParameterList)
-  .execute("SP_GetMachineParameters_ByCategory");
+    const result = await pool
+      .request()
+      .input("MachineID", sql.NVarChar, MachineID)
+      .input("ProdDate", sql.Date, ProdDate)
+      .input("ShiftName", sql.NVarChar, ShiftName)
+      // 👇 Change sql.Time → sql.VarChar
+      .input("StartTime", sql.VarChar, StartTime)
+      .input("EndTime", sql.VarChar, EndTime)
+      .input("ParameterList", sql.NVarChar, ParameterList)
+      .execute("SP_GetMachineParameterTrend_ByTime1");
 
-// Return response
-res.status(200).json({
-  success: true,
-  message: "Data fetched successfully.",
-  data: result.recordset,
+    res.status(200).json({
+      success: true,
+      message: "Machine parameter trend fetched successfully.",
+      data: result.recordset,
+    });
+
+  } catch (error) {
+    console.error("Error in /GetMachineParameterTrendByTime:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
 });
-
-
-} catch (error) {
-console.error("Error in /GetMachineParametersByCategory:", error);
-res.status(500).json({
-success: false,
-message: "Internal Server Error",
-error: error.message,
-});
-}
-});
-
-
 
 
 
