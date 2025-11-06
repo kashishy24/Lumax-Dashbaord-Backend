@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 
-router.get("AlarmDurationOccurrence", async (req, res) => {
+router.get("/AlarmDurationOccurrence", async (req, res) => {
   const { Mode, StartDate, EndDate, EquipmentID } = req.query;
 
   try {

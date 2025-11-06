@@ -75,7 +75,7 @@ router.get("/GetMachineIdleTime", async (req, res) => {
 
 
 // ✅ Get the Machine Total DT according to filters (Mode + EquipmentID)
-router.get("/GetMachineTotalTime", async (req, res) => {
+router.get("/GetMachineDTTotalTime", async (req, res) => {
   try {
     // Accept case-insensitive query parameters
     const mode = req.query.mode || req.query.Mode || "SHIFT";
