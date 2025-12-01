@@ -120,7 +120,7 @@ router.get("/GetOEETrend", async (req, res) => {
       .input("Mode", sql.VarChar(20), Mode)
       .input("StartDate", sql.Date, StartDate || null)
       .input("EndDate", sql.Date, EndDate || null)
-      .execute("sp_Get_Plant_OEE_Trend");
+      .execute("sp_Get_Plant_OEE_Trend_1");
 
     // Return the data
     res.json({
@@ -158,7 +158,7 @@ router.get("/GetAvailabilityTrend", async (req, res) => {
       .input("Mode", sql.VarChar(20), Mode)
       .input("StartDate", sql.Date, StartDate || null)
       .input("EndDate", sql.Date, EndDate || null)
-      .execute("sp_Get_Plant_Availability_DTandTotalTime_Trend");
+      .execute("sp_Get_Plant_Availability_DTandTotalTime_Trend_1");
 
     // Return the data
     res.json({
@@ -195,7 +195,7 @@ router.get("/GetPerformanceTrend", async (req, res) => {
       .input("Mode", sql.VarChar(20), Mode)
       .input("StartDate", sql.Date, StartDate || null)
       .input("EndDate", sql.Date, EndDate || null)
-      .execute("sp_Get_Plant_Perf_Qty_Trend");
+      .execute("sp_Get_Plant_Perf_Qty_Trend_1");
 
     // Return the data
     res.json({
@@ -231,7 +231,7 @@ router.get("/GetQualityTrend", async (req, res) => {
       .input("Mode", sql.VarChar(20), Mode)
       .input("StartDate", sql.Date, StartDate || null)
       .input("EndDate", sql.Date, EndDate || null)
-      .execute("sp_Get_Plant_Quantity_GoodRejected_Trend");
+      .execute("sp_Get_Plant_Quantity_GoodRejected_Trend_1");
 
     // Return the data
     res.json({
