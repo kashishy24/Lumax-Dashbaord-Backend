@@ -120,7 +120,7 @@ router.get("/GetOEETrend", async (req, res) => {
       .input("Mode", sql.VarChar(20), Mode)
       .input("StartDate", sql.Date, StartDate || null)
       .input("EndDate", sql.Date, EndDate || null)
-      .execute("sp_Get_Plant_OEE_Trend_1");
+      .execute("sp_Get_Plant_OEE_Trend_New");
 
     // Return the data
     res.json({
