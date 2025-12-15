@@ -460,7 +460,7 @@ router.get("/GetHourlyExpActualQtyTrend", async (req, res) => {
       request.input("EquipmentID", sql.NVarChar(50), null);
     }
 
-    const result = await request.execute("sp_Get_Machine_Hourly_ExpActual_Trend_1");
+    const result = await request.execute("sp_Get_Machine_Hourly_ExpActual_Trend_New");
 
     // Return the data
     res.json({
@@ -505,7 +505,7 @@ router.get("/GetHourlyTotalRejectedQtyTrend", async (req, res) => {
       request.input("EquipmentID", sql.NVarChar(50), null);
     }
 
-    const result = await request.execute("sp_Get_Machine_Hourly_TotalRejected_Trend_1");
+    const result = await request.execute("sp_Get_Machine_Hourly_TotalRejected_Trend_New");
 
     // Return the data
     res.json({
