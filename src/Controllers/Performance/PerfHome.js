@@ -131,27 +131,66 @@ router.get("/machinewise", async (req, res) => {
 //Get the   OEE Trend
 
 // ✅ API Endpoint: /api/PerformanceHome/GetOEETrend
+// router.get("/GetOEETrend", async (req, res) => {
+//   const { mode, StartDate, EndDate } = req.query;
+
+//   try {
+//     // Basic validation
+//     if (!mode) {
+//       return res.status(400).json({ success: false, message: "Mode is required" });
+//     }
+
+//     // Connect to SQL
+//     const pool = await sql.connect();
+
+//     // Execute stored procedure
+//     const result = await pool
+//       .request()
+//       .input("mode", sql.VarChar(20), Mode)
+//       .input("StartDate", sql.Date, StartDate || null)
+//       .input("EndDate", sql.Date, EndDate || null)
+//       .execute("sp_Get_Plant_OEE_Trend_New");
+
+//     // Return the data
+//     res.json({
+//       success: true,
+//       data: result.recordset,
+//     });
+//   } catch (error) {
+//     console.error("Error executing SP:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//       error: error.message,
+//     });
+//   }
+// });
+// ✅ API Endpoint: /api/PerformanceHome/GetOEETrend
 router.get("/GetOEETrend", async (req, res) => {
-  const { Mode, StartDate, EndDate } = req.query;
+ try {
+    let { Mode, mode, StartDate, EndDate } = req.query;
 
-  try {
-    // Basic validation
+    // ✅ Accept both Mode or mode
+    Mode = (Mode || mode);
+
     if (!Mode) {
-      return res.status(400).json({ success: false, message: "Mode is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Mode is required",
+      });
     }
+    // ✅ Normalize mode (accept upper/lower/mixed case)
+     Mode = Mode.toUpperCase(); // SHIFT, DAY, WEEK, MONTH, DATE
 
-    // Connect to SQL
     const pool = await sql.connect();
 
-    // Execute stored procedure
     const result = await pool
       .request()
-      .input("Mode", sql.VarChar(20), Mode)
+      .input("Mode", sql.VarChar(20), Mode)   // ✅ FIXED
       .input("StartDate", sql.Date, StartDate || null)
       .input("EndDate", sql.Date, EndDate || null)
       .execute("sp_Get_Plant_OEE_Trend_New");
 
-    // Return the data
     res.json({
       success: true,
       data: result.recordset,
@@ -169,19 +208,60 @@ router.get("/GetOEETrend", async (req, res) => {
 
 //Get the   Availability  Trend
 
-router.get("/GetAvailabilityTrend", async (req, res) => {
-  const { Mode, StartDate, EndDate } = req.query;
+// router.get("/GetAvailabilityTrend", async (req, res) => {
+//   const { Mode, StartDate, EndDate } = req.query;
 
+//   try {
+//     // Basic validation
+//     if (!Mode) {
+//       return res.status(400).json({ success: false, message: "Mode is required" });
+//     }
+
+//     // Connect to SQL
+//     const pool = await sql.connect();
+
+//     // Execute stored procedure
+//     const result = await pool
+//       .request()
+//       .input("Mode", sql.VarChar(20), Mode)
+//       .input("StartDate", sql.Date, StartDate || null)
+//       .input("EndDate", sql.Date, EndDate || null)
+//       .execute("sp_Get_Plant_Availability_DTandTotalTime_Trend_New");
+
+//     // Return the data
+//     res.json({
+//       success: true,
+//       data: result.recordset,
+//     });
+//   } catch (error) {
+//     console.error("Error executing SP:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//       error: error.message,
+//     });
+//   }
+// });
+// Get Availability Trend
+router.get("/GetAvailabilityTrend", async (req, res) => {
   try {
-    // Basic validation
+    let { Mode, mode, StartDate, EndDate } = req.query;
+
+    // ✅ Accept both Mode or mode
+    Mode = (Mode || mode);
+
     if (!Mode) {
-      return res.status(400).json({ success: false, message: "Mode is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Mode is required",
+      });
     }
 
-    // Connect to SQL
+    // ✅ Normalize case
+    Mode = Mode.toUpperCase();
+
     const pool = await sql.connect();
 
-    // Execute stored procedure
     const result = await pool
       .request()
       .input("Mode", sql.VarChar(20), Mode)
@@ -189,13 +269,12 @@ router.get("/GetAvailabilityTrend", async (req, res) => {
       .input("EndDate", sql.Date, EndDate || null)
       .execute("sp_Get_Plant_Availability_DTandTotalTime_Trend_New");
 
-    // Return the data
     res.json({
       success: true,
       data: result.recordset,
     });
   } catch (error) {
-    console.error("Error executing SP:", error);
+    console.error("Error executing Availability Trend SP:", error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -206,19 +285,60 @@ router.get("/GetAvailabilityTrend", async (req, res) => {
 
 
 //Get the   Performance  Trend
-router.get("/GetPerformanceTrend", async (req, res) => {
-  const { Mode, StartDate, EndDate } = req.query;
+// router.get("/GetPerformanceTrend", async (req, res) => {
+//   const { Mode, StartDate, EndDate } = req.query;
 
+//   try {
+//     // Basic validation
+//     if (!Mode) {
+//       return res.status(400).json({ success: false, message: "Mode is required" });
+//     }
+
+//     // Connect to SQL
+//     const pool = await sql.connect();
+
+//     // Execute stored procedure
+//     const result = await pool
+//       .request()
+//       .input("Mode", sql.VarChar(20), Mode)
+//       .input("StartDate", sql.Date, StartDate || null)
+//       .input("EndDate", sql.Date, EndDate || null)
+//       .execute("sp_Get_Plant_Perf_Qty_Trend_New");
+
+//     // Return the data
+//     res.json({
+//       success: true,
+//       data: result.recordset,
+//     });
+//   } catch (error) {
+//     console.error("Error executing SP:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//       error: error.message,
+//     });
+//   }
+// });
+
+// Get Performance Trend
+router.get("/GetPerformanceTrend", async (req, res) => {
   try {
-    // Basic validation
+    let { Mode, mode, StartDate, EndDate } = req.query;
+
+    Mode = (Mode || mode);
+
     if (!Mode) {
-      return res.status(400).json({ success: false, message: "Mode is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Mode is required",
+      });
     }
 
-    // Connect to SQL
+    // ✅ Normalize case
+    Mode = Mode.toUpperCase();
+
     const pool = await sql.connect();
 
-    // Execute stored procedure
     const result = await pool
       .request()
       .input("Mode", sql.VarChar(20), Mode)
@@ -226,13 +346,12 @@ router.get("/GetPerformanceTrend", async (req, res) => {
       .input("EndDate", sql.Date, EndDate || null)
       .execute("sp_Get_Plant_Perf_Qty_Trend_New");
 
-    // Return the data
     res.json({
       success: true,
       data: result.recordset,
     });
   } catch (error) {
-    console.error("Error executing SP:", error);
+    console.error("Error executing Performance Trend SP:", error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -241,20 +360,62 @@ router.get("/GetPerformanceTrend", async (req, res) => {
   }
 });
 
-//Get the   Quantity  Trend
-router.get("/GetQualityTrend", async (req, res) => {
-  const { Mode, StartDate, EndDate } = req.query;
 
+//Get the   Quantity  Trend
+// router.get("/GetQualityTrend", async (req, res) => {
+//   const { Mode, StartDate, EndDate } = req.query;
+
+//   try {
+//     // Basic validation
+//     if (!Mode) {
+//       return res.status(400).json({ success: false, message: "Mode is required" });
+//     }
+
+//     // Connect to SQL
+//     const pool = await sql.connect();
+
+//     // Execute stored procedure
+//     const result = await pool
+//       .request()
+//       .input("Mode", sql.VarChar(20), Mode)
+//       .input("StartDate", sql.Date, StartDate || null)
+//       .input("EndDate", sql.Date, EndDate || null)
+//       .execute("sp_Get_Plant_Quantity_GoodRejected_Trend_New");
+
+//     // Return the data
+//     res.json({
+//       success: true,
+//       data: result.recordset,
+//     });
+//   } catch (error) {
+//     console.error("Error executing SP:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//       error: error.message,
+//     });
+//   }
+// });
+
+// Get Quality Trend
+router.get("/GetQualityTrend", async (req, res) => {
   try {
-    // Basic validation
+    let { Mode, mode, StartDate, EndDate } = req.query;
+
+    Mode = (Mode || mode);
+
     if (!Mode) {
-      return res.status(400).json({ success: false, message: "Mode is required" });
+      return res.status(400).json({
+        success: false,
+        message: "Mode is required",
+      });
     }
 
-    // Connect to SQL
+    // ✅ Normalize case
+    Mode = Mode.toUpperCase();
+
     const pool = await sql.connect();
 
-    // Execute stored procedure
     const result = await pool
       .request()
       .input("Mode", sql.VarChar(20), Mode)
@@ -262,13 +423,12 @@ router.get("/GetQualityTrend", async (req, res) => {
       .input("EndDate", sql.Date, EndDate || null)
       .execute("sp_Get_Plant_Quantity_GoodRejected_Trend_New");
 
-    // Return the data
     res.json({
       success: true,
       data: result.recordset,
     });
   } catch (error) {
-    console.error("Error executing SP:", error);
+    console.error("Error executing Quality Trend SP:", error);
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -277,30 +437,31 @@ router.get("/GetQualityTrend", async (req, res) => {
   }
 });
 
+
 //Get Machine Names
 router.get("/GetMachineName", async (req, res) => {
-try {
-const sql = require("mssql");
-const pool = await sql.connect();
-// Execute stored procedure
-const result = await pool
-  .request()
-  .execute("Dashbaord_GetDistinctEquipmentNames");
+  try {
+    const sql = require("mssql");
+    const pool = await sql.connect();
+    // Execute stored procedure
+    const result = await pool
+      .request()
+      .execute("Dashbaord_GetDistinctEquipmentNames");
 
-// Return response
-res.status(200).json({
-  success: true,
-  message: "Data fetched successfully.",
-  data: result.recordset,
-});
-} catch (error) {
-console.error("Error in Dashbaord_GetDistinctEquipmentNames:", error);
-res.status(500).json({
-success: false,
-message: "Internal Server Error",
-error: error.message,
-});
-}
+    // Return response
+    res.status(200).json({
+      success: true,
+      message: "Data fetched successfully.",
+      data: result.recordset,
+    });
+  } catch (error) {
+    console.error("Error in Dashbaord_GetDistinctEquipmentNames:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
 });
 
 //------------------------------------------
